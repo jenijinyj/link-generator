@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>页面Link生成器 - 多场景版</title>
+    <title>Link Generator - Multi-Scenario</title>
     <style>
         * {
             margin: 0;
@@ -243,11 +243,6 @@
             line-height: 1.5;
         }
 
-        .buttons-group {
-            display: flex;
-            gap: 10px;
-        }
-
         .reset-btn {
             padding: 12px 24px;
             background: #f0f0f0;
@@ -264,78 +259,72 @@
             background: #e0e0e0;
             border-color: #999;
         }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔗 页面Link生成器</h1>
-            <p>多场景链接生成工具</p>
+            <h1>🔗 Link Generator</h1>
+            <p>Multi-Scenario Link Generation Tool</p>
         </div>
 
-        <!-- 场景标签 -->
+        <!-- Scene Tabs -->
         <div class="tabs" id="sceneTabs"></div>
 
-        <!-- 内容区域 -->
+        <!-- Content Area -->
         <div class="content" id="scenesContainer"></div>
     </div>
 
     <script>
-        // ============ 场景配置 ============
+        // ============ Scene Configurations ============
 
         const sceneConfigs = {
-            // 场景1: 活动页链接
+            // Scene 1: Activity Page Link
             activityPage: {
                 id: 'activityPage',
-                name: '活动页链接',
+                name: 'Activity Page Link',
                 inputs: [
                     {
                         id: 'act_currency',
-                        label: '货币 (Curr)',
+                        label: 'Currency (Curr)',
                         type: 'select',
                         options: [
-                            { value: 'SGD', label: 'SGD - 新加坡元' },
-                            { value: 'USD', label: 'USD - 美元' },
-                            { value: 'CNY', label: 'CNY - 人民币' },
-                            { value: 'HKD', label: 'HKD - 港元' },
-                            { value: 'MYR', label: 'MYR - 马来西亚林吉特' },
-                            { value: 'THB', label: 'THB - 泰国铢' },
-                            { value: 'IDR', label: 'IDR - 印尼卢比' },
-                            { value: 'PHP', label: 'PHP - 菲律宾比索' },
-                            { value: 'VND', label: 'VND - 越南盾' },
-                            { value: 'AUD', label: 'AUD - 澳大利亚元' },
-                            { value: 'NZD', label: 'NZD - 新西兰元' },
-                            { value: 'EUR', label: 'EUR - 欧元' },
-                            { value: 'GBP', label: 'GBP - 英镑' },
-                            { value: 'JPY', label: 'JPY - 日元' },
-                            { value: 'KRW', label: 'KRW - 韩元' }
+                            { value: 'SGD', label: 'SGD - Singapore Dollar' },
+                            { value: 'USD', label: 'USD - US Dollar' },
+                            { value: 'CNY', label: 'CNY - Chinese Yuan' },
+                            { value: 'HKD', label: 'HKD - Hong Kong Dollar' },
+                            { value: 'MYR', label: 'MYR - Malaysian Ringgit' },
+                            { value: 'THB', label: 'THB - Thai Baht' },
+                            { value: 'IDR', label: 'IDR - Indonesian Rupiah' },
+                            { value: 'PHP', label: 'PHP - Philippine Peso' },
+                            { value: 'VND', label: 'VND - Vietnamese Dong' },
+                            { value: 'AUD', label: 'AUD - Australian Dollar' },
+                            { value: 'NZD', label: 'NZD - New Zealand Dollar' },
+                            { value: 'EUR', label: 'EUR - Euro' },
+                            { value: 'GBP', label: 'GBP - British Pound' },
+                            { value: 'JPY', label: 'JPY - Japanese Yen' },
+                            { value: 'KRW', label: 'KRW - South Korean Won' }
                         ],
                         defaultValue: 'SGD'
                     },
                     {
                         id: 'act_path',
-                        label: '路径 (Path)',
+                        label: 'Path',
                         type: 'text',
-                        placeholder: '例如: memberday, sales, promo',
+                        placeholder: 'e.g. memberday, sales, promo',
                         defaultValue: 'memberday'
                     }
                 ],
                 checkboxes: [
                     {
                         id: 'act_withParams',
-                        label: '包含可选参数 (transparentBar=1&wkp=1)',
+                        label: 'Include optional parameters (transparentBar=1&wkp=1)',
                         defaultValue: true
                     }
                 ],
                 outputs: [
-                    { id: 'act_universal1', label: '📱 Universal Link (第一个Locale)' },
-                    { id: 'act_universal2', label: '📱 Universal Link (第二个Locale)' },
+                    { id: 'act_universal1', label: '📱 Universal Link (First Locale)' },
+                    { id: 'act_universal2', label: '📱 Universal Link (Second Locale)' },
                     { id: 'act_simplest', label: '⚡ Simplest Link' },
                     { id: 'act_deeplink', label: '🔀 Deeplink' }
                 ],
@@ -387,49 +376,49 @@
                 }
             },
 
-            // 场景2: 机票列表页链接
+            // Scene 2: Flight List Page Link
             flightList: {
                 id: 'flightList',
-                name: '机票列表页链接',
+                name: 'Flight List Page Link',
                 inputs: [
                     {
                         id: 'flight_region',
                         label: 'Region',
                         type: 'select',
                         options: [
-                            { value: 'sg', label: 'sg - 新加坡' },
-                            { value: 'my', label: 'my - 马来西亚' },
-                            { value: 'id', label: 'id - 印尼' },
-                            { value: 'th', label: 'th - 泰国' },
-                            { value: 'ph', label: 'ph - 菲律宾' },
-                            { value: 'vn', label: 'vn - 越南' },
-                            { value: 'hk', label: 'hk - 香港' },
-                            { value: 'tw', label: 'tw - 台湾' },
-                            { value: 'jp', label: 'jp - 日本' },
-                            { value: 'kr', label: 'kr - 韩国' },
-                            { value: 'au', label: 'au - 澳大利亚' }
+                            { value: 'sg', label: 'sg - Singapore' },
+                            { value: 'my', label: 'my - Malaysia' },
+                            { value: 'id', label: 'id - Indonesia' },
+                            { value: 'th', label: 'th - Thailand' },
+                            { value: 'ph', label: 'ph - Philippines' },
+                            { value: 'vn', label: 'vn - Vietnam' },
+                            { value: 'hk', label: 'hk - Hong Kong' },
+                            { value: 'tw', label: 'tw - Taiwan' },
+                            { value: 'jp', label: 'jp - Japan' },
+                            { value: 'kr', label: 'kr - South Korea' },
+                            { value: 'au', label: 'au - Australia' }
                         ],
                         defaultValue: 'sg'
                     },
                     {
                         id: 'flight_dcitycode',
-                        label: '出发城市 (城市三字码)',
+                        label: 'Departure City (City Code)',
                         type: 'text',
-                        placeholder: '例如: SIN',
+                        placeholder: 'e.g. SIN',
                         defaultValue: 'SIN'
                     },
                     {
                         id: 'flight_acitycode',
-                        label: '到达城市 (城市三字码)',
+                        label: 'Arrival City (City Code)',
                         type: 'text',
-                        placeholder: '例如: MEL',
+                        placeholder: 'e.g. MEL',
                         defaultValue: 'HKG'
                     },
                     {
                         id: 'flight_airlinecode',
-                        label: '航空公司代码 (可选)',
+                        label: 'Airline Code (Optional)',
                         type: 'text',
-                        placeholder: '例如: SQ, CA',
+                        placeholder: 'e.g. SQ, CA',
                         defaultValue: ''
                     },
                     {
@@ -437,8 +426,8 @@
                         label: 'Flight Type',
                         type: 'select',
                         options: [
-                            { value: 'RT', label: 'RT - 往返' },
-                            { value: 'OW', label: 'OW - 单程' }
+                            { value: 'RT', label: 'RT - Round Trip' },
+                            { value: 'OW', label: 'OW - One Way' }
                         ],
                         defaultValue: 'RT'
                     },
@@ -447,27 +436,27 @@
                         label: 'Class',
                         type: 'select',
                         options: [
-                            { value: 'Y', label: 'Y - 经济舱' },
-                            { value: 'S', label: 'S - 高级经济舱' },
-                            { value: 'C', label: 'C - 商务舱' },
-                            { value: 'F', label: 'F - 头等舱' }
+                            { value: 'Y', label: 'Y - Economy' },
+                            { value: 'S', label: 'S - Premium Economy' },
+                            { value: 'C', label: 'C - Business' },
+                            { value: 'F', label: 'F - First Class' }
                         ],
                         defaultValue: 'Y'
                     },
                     {
                         id: 'flight_pax',
-                        label: '出行人数',
+                        label: 'Number of Passengers',
                         type: 'number',
                         placeholder: '1-9',
                         defaultValue: '1'
                     },
                     {
                         id: 'flight_nonstop',
-                        label: 'Nonstop',
+                        label: 'Non-stop',
                         type: 'select',
                         options: [
-                            { value: 'F', label: 'F - 不限' },
-                            { value: 'T', label: 'T - 直飞' }
+                            { value: 'F', label: 'F - Any' },
+                            { value: 'T', label: 'T - Non-stop Only' }
                         ],
                         defaultValue: 'F'
                     }
@@ -492,7 +481,7 @@
                             }
                         }
                     } catch (e) {
-                        console.error('加载城市数据失败:', e);
+                        console.error('Failed to load city data:', e);
                     }
                 },
                 generate(inputs, checkboxes) {
@@ -505,20 +494,16 @@
                     const pax = inputs.flight_pax;
                     const nonstop = inputs.flight_nonstop;
 
-                    // 获取城市名称 (需要从加载的数据中获取)
                     const dcityname = this.cityData?.[dcitycode] || dcitycode;
                     const acityname = this.cityData?.[acitycode] || acitycode;
                     const routeName = `${dcityname}-to-${acityname}`;
 
-                    // 生成日期
                     const today = new Date();
                     const ddate = today.toISOString().split('T')[0];
                     const rdate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-                    // Universal Link
                     let universalLink = `https://${region}.trip.com/flights/${routeName}/tickets-${dcitycode}-${acitycode}?FlightWay=${flightType}&class=${flightClass}&quantity=${pax}&ddate=${ddate}&rdate=${rdate}`;
 
-                    // 只有航司代码不为空时才添加
                     if (airlinecode) {
                         universalLink += `&airline=${airlinecode}`;
                     }
@@ -527,7 +512,6 @@
                         universalLink += '&nonstop=on';
                     }
 
-                    // Deeplink - 只有航司代码不为空时才包含
                     let deeplink = `ctripglobal://FlightListAB/?dct=${dcitycode}&act=${acitycode}&ddt=${ddate}&tp=i`;
                     if (airlinecode) {
                         deeplink += `&al=${airlinecode}`;
@@ -541,7 +525,7 @@
             }
         };
 
-        // ============ UI 生成和管理 ============
+        // ============ UI Generation and Management ============
 
         class LinkGenerator {
             constructor() {
@@ -554,7 +538,6 @@
             async init() {
                 this.renderTabs();
                 this.renderScene(this.currentScene);
-                // 加载机票城市数据
                 await sceneConfigs.flightList.loadCityData();
             }
 
@@ -584,11 +567,11 @@
                 const sceneDiv = document.createElement('div');
                 sceneDiv.className = 'scene active';
 
-                // 输入区域
+                // Input Section
                 if (config.inputs.length > 0 || config.checkboxes.length > 0) {
                     const inputSection = document.createElement('div');
                     inputSection.className = 'section';
-                    inputSection.innerHTML = '<div class="section-title">输入配置</div>';
+                    inputSection.innerHTML = '<div class="section-title">Input Configuration</div>';
 
                     if (config.inputs.length > 0) {
                         const inputGroup = document.createElement('div');
@@ -667,10 +650,10 @@
                     sceneDiv.appendChild(inputSection);
                 }
 
-                // 输出区域
+                // Output Section
                 const outputSection = document.createElement('div');
                 outputSection.className = 'section';
-                outputSection.innerHTML = '<div class="section-title">生成结果</div>';
+                outputSection.innerHTML = '<div class="section-title">Generated Links</div>';
 
                 config.outputs.forEach(output => {
                     const outputBox = document.createElement('div');
@@ -690,11 +673,11 @@
                     const link = document.createElement('div');
                     link.id = output.id;
                     link.className = 'output-link';
-                    link.textContent = '加载中...';
+                    link.textContent = 'Loading...';
 
                     const btn = document.createElement('button');
                     btn.className = 'copy-btn';
-                    btn.textContent = '复制';
+                    btn.textContent = 'Copy';
                     btn.onclick = (e) => this.copyToClipboard(output.id, e);
 
                     content.appendChild(link);
@@ -707,14 +690,14 @@
 
                 sceneDiv.appendChild(outputSection);
 
-                // 重置按钮
+                // Reset Button
                 const buttonSection = document.createElement('div');
                 buttonSection.className = 'section';
                 buttonSection.style.marginBottom = '0';
 
                 const resetBtn = document.createElement('button');
                 resetBtn.className = 'reset-btn';
-                resetBtn.textContent = '重置表单';
+                resetBtn.textContent = 'Reset';
                 resetBtn.onclick = () => this.resetScene(sceneId);
 
                 buttonSection.appendChild(resetBtn);
@@ -722,21 +705,19 @@
 
                 container.appendChild(sceneDiv);
 
-                // 生成初始链接
+                // Generate initial links
                 this.updateAndGenerate(sceneId);
             }
 
             updateAndGenerate(sceneId) {
                 const config = sceneConfigs[sceneId];
 
-                // 收集输入值
                 const inputs = {};
                 config.inputs.forEach(input => {
                     const element = document.getElementById(input.id);
                     inputs[input.id] = element ? element.value : input.defaultValue;
                 });
 
-                // 收集复选框值
                 const checkboxes = {};
                 config.checkboxes.forEach(checkbox => {
                     const element = document.getElementById(checkbox.id);
@@ -746,10 +727,8 @@
                 this.inputValues[sceneId] = inputs;
                 this.checkboxValues[sceneId] = checkboxes;
 
-                // 生成链接
                 const results = config.generate(inputs, checkboxes);
 
-                // 显示结果
                 Object.entries(results).forEach(([outputId, value]) => {
                     const element = document.getElementById(outputId);
                     if (element) {
@@ -796,7 +775,7 @@
                     const successful = document.execCommand('copy');
 
                     if (successful) {
-                        btn.textContent = '✓ 已复制';
+                        btn.textContent = '✓ Copied';
                         btn.classList.add('copied');
                         setTimeout(() => {
                             btn.textContent = originalText;
@@ -804,14 +783,14 @@
                         }, 2000);
                     }
                 } catch (err) {
-                    alert('✓ 链接已选中，请按 Ctrl+C (或 Cmd+C) 复制');
+                    alert('✓ Link selected. Press Ctrl+C (or Cmd+C) to copy');
                 } finally {
                     document.body.removeChild(textarea);
                 }
             }
         }
 
-        // 初始化
+        // Initialize
         const generator = new LinkGenerator();
     </script>
 </body>
