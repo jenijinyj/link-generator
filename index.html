@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面Link生成器 - 多场景版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            background: #efefef;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .scene {
+            display: none;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-field.input-field {
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 6px;
+        }
+
+        .form-field.input-field label {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .output-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .output-item {
+            margin-bottom: 20px;
+        }
+
+        .output-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #667eea;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .output-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .output-link {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #333;
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            padding: 10px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .buttons-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reset-btn {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 页面Link生成器</h1>
+            <p>多场景链接生成工具</p>
+        </div>
+
+        <!-- 场景标签 -->
+        <div class="tabs" id="sceneTabs"></div>
+
+        <!-- 内容区域 -->
+        <div class="content" id="scenesContainer"></div>
+    </div>
+
+    <script>
+        // ============ 场景配置 ============
+
+        const sceneConfigs = {
+            // 场景1: 活动页链接
+            activityPage: {
+                id: 'activityPage',
+                name: '活动页链接',
+                inputs: [
+                    {
+                        id: 'act_currency',
+                        label: '货币 (Curr)',
+                        type: 'select',
+                        options: [
+                            { value: 'SGD', label: 'SGD - 新加坡元' },
+                            { value: 'USD', label: 'USD - 美元' },
+                            { value: 'CNY', label: 'CNY - 人民币' },
+                            { value: 'HKD', label: 'HKD - 港元' },
+                            { value: 'MYR', label: 'MYR - 马来西亚林吉特' },
+                            { value: 'THB', label: 'THB - 泰国铢' },
+                            { value: 'IDR', label: 'IDR - 印尼卢比' },
+                            { value: 'PHP', label: 'PHP - 菲律宾比索' },
+                            { value: 'VND', label: 'VND - 越南盾' },
+                            { value: 'AUD', label: 'AUD - 澳大利亚元' },
+                            { value: 'NZD', label: 'NZD - 新西兰元' },
+                            { value: 'EUR', label: 'EUR - 欧元' },
+                            { value: 'GBP', label: 'GBP - 英镑' },
+                            { value: 'JPY', label: 'JPY - 日元' },
+                            { value: 'KRW', label: 'KRW - 韩元' }
+                        ],
+                        defaultValue: 'SGD'
+                    },
+                    {
+                        id: 'act_path',
+                        label: '路径 (Path)',
+                        type: 'text',
+                        placeholder: '例如: memberday, sales, promo',
+                        defaultValue: 'memberday'
+                    }
+                ],
+                checkboxes: [
+                    {
+                        id: 'act_withParams',
+                        label: '包含可选参数 (transparentBar=1&wkp=1)',
+                        defaultValue: true
+                    }
+                ],
+                outputs: [
+                    { id: 'act_universal1', label: '📱 Universal Link (第一个Locale)' },
+                    { id: 'act_universal2', label: '📱 Universal Link (第二个Locale)' },
+                    { id: 'act_simplest', label: '⚡ Simplest Link' },
+                    { id: 'act_deeplink', label: '🔀 Deeplink' }
+                ],
+                currencyMap: {
+                    'SGD': { prefix: 'sg', locale1: 'en-SG', locale2: 'zh-SG' },
+                    'USD': { prefix: 'us', locale1: 'en-US', locale2: 'zh-US' },
+                    'CNY': { prefix: 'cn', locale1: 'zh-CN', locale2: 'zh-CN' },
+                    'HKD': { prefix: 'hk', locale1: 'en-HK', locale2: 'zh-HK' },
+                    'MYR': { prefix: 'my', locale1: 'en-MY', locale2: 'zh-MY' },
+                    'THB': { prefix: 'th', locale1: 'en-TH', locale2: 'th-TH' },
+                    'IDR': { prefix: 'id', locale1: 'en-ID', locale2: 'id-ID' },
+                    'PHP': { prefix: 'ph', locale1: 'en-PH', locale2: 'fil-PH' },
+                    'VND': { prefix: 'vn', locale1: 'en-VN', locale2: 'vi-VN' },
+                    'AUD': { prefix: 'au', locale1: 'en-AU', locale2: 'en-AU' },
+                    'NZD': { prefix: 'nz', locale1: 'en-NZ', locale2: 'en-NZ' },
+                    'EUR': { prefix: 'eu', locale1: 'en-EU', locale2: 'en-EU' },
+                    'GBP': { prefix: 'gb', locale1: 'en-GB', locale2: 'en-GB' },
+                    'JPY': { prefix: 'jp', locale1: 'en-JP', locale2: 'ja-JP' },
+                    'KRW': { prefix: 'kr', locale1: 'en-KR', locale2: 'ko-KR' }
+                },
+                generate(inputs, checkboxes) {
+                    const curr = inputs.act_currency;
+                    const path = inputs.act_path;
+                    const withParams = checkboxes.act_withParams;
+
+                    const mapping = this.currencyMap[curr];
+                    const baseUrl = `https://${mapping.prefix}.trip.com/sale/w/${path}.html`;
+
+                    const universal1 = withParams
+                        ? `${baseUrl}?locale=${mapping.locale1}&curr=${curr}&transparentBar=1&wkp=1`
+                        : `${baseUrl}?locale=${mapping.locale1}&curr=${curr}`;
+
+                    const universal2 = withParams
+                        ? `${baseUrl}?locale=${mapping.locale2}&curr=${curr}&transparentBar=1&wkp=1`
+                        : `${baseUrl}?locale=${mapping.locale2}&curr=${curr}`;
+
+                    const simplest = withParams
+                        ? `${baseUrl}?&transparentBar=1&wkp=1`
+                        : baseUrl;
+
+                    const deeplink = `ctripglobal://WebView?url=${encodeURIComponent(simplest)}`;
+
+                    return {
+                        act_universal1: universal1,
+                        act_universal2: universal2,
+                        act_simplest: simplest,
+                        act_deeplink: deeplink
+                    };
+                }
+            },
+
+            // 场景2: 机票列表页链接
+            flightList: {
+                id: 'flightList',
+                name: '机票列表页链接',
+                inputs: [
+                    {
+                        id: 'flight_region',
+                        label: 'Region',
+                        type: 'select',
+                        options: [
+                            { value: 'sg', label: 'sg - 新加坡' },
+                            { value: 'my', label: 'my - 马来西亚' },
+                            { value: 'id', label: 'id - 印尼' },
+                            { value: 'th', label: 'th - 泰国' },
+                            { value: 'ph', label: 'ph - 菲律宾' },
+                            { value: 'vn', label: 'vn - 越南' },
+                            { value: 'hk', label: 'hk - 香港' },
+                            { value: 'tw', label: 'tw - 台湾' },
+                            { value: 'jp', label: 'jp - 日本' },
+                            { value: 'kr', label: 'kr - 韩国' },
+                            { value: 'au', label: 'au - 澳大利亚' }
+                        ],
+                        defaultValue: 'sg'
+                    },
+                    {
+                        id: 'flight_dcitycode',
+                        label: '出发城市 (城市三字码)',
+                        type: 'text',
+                        placeholder: '例如: SIN',
+                        defaultValue: 'SIN'
+                    },
+                    {
+                        id: 'flight_acitycode',
+                        label: '到达城市 (城市三字码)',
+                        type: 'text',
+                        placeholder: '例如: MEL',
+                        defaultValue: 'HKG'
+                    },
+                    {
+                        id: 'flight_airlinecode',
+                        label: '航空公司代码 (可选)',
+                        type: 'text',
+                        placeholder: '例如: SQ, CA',
+                        defaultValue: ''
+                    },
+                    {
+                        id: 'flight_type',
+                        label: 'Flight Type',
+                        type: 'select',
+                        options: [
+                            { value: 'RT', label: 'RT - 往返' },
+                            { value: 'OW', label: 'OW - 单程' }
+                        ],
+                        defaultValue: 'RT'
+                    },
+                    {
+                        id: 'flight_class',
+                        label: 'Class',
+                        type: 'select',
+                        options: [
+                            { value: 'Y', label: 'Y - 经济舱' },
+                            { value: 'S', label: 'S - 高级经济舱' },
+                            { value: 'C', label: 'C - 商务舱' },
+                            { value: 'F', label: 'F - 头等舱' }
+                        ],
+                        defaultValue: 'Y'
+                    },
+                    {
+                        id: 'flight_pax',
+                        label: '出行人数',
+                        type: 'number',
+                        placeholder: '1-9',
+                        defaultValue: '1'
+                    },
+                    {
+                        id: 'flight_nonstop',
+                        label: 'Nonstop',
+                        type: 'select',
+                        options: [
+                            { value: 'F', label: 'F - 不限' },
+                            { value: 'T', label: 'T - 直飞' }
+                        ],
+                        defaultValue: 'F'
+                    }
+                ],
+                checkboxes: [],
+                outputs: [
+                    { id: 'flight_universal', label: '📱 Universal Link' },
+                    { id: 'flight_deeplink', label: '🔀 Deeplink' }
+                ],
+                cityData: null,
+                async loadCityData() {
+                    if (this.cityData) return;
+                    try {
+                        const response = await fetch('./城市ID.csv');
+                        const text = await response.text();
+                        this.cityData = {};
+                        const lines = text.split('\n');
+                        for (let i = 1; i < lines.length; i++) {
+                            const cols = lines[i].split(',');
+                            if (cols.length >= 3) {
+                                this.cityData[cols[1].trim()] = cols[2].trim();
+                            }
+                        }
+                    } catch (e) {
+                        console.error('加载城市数据失败:', e);
+                    }
+                },
+                generate(inputs, checkboxes) {
+                    const region = inputs.flight_region;
+                    const dcitycode = inputs.flight_dcitycode.toUpperCase();
+                    const acitycode = inputs.flight_acitycode.toUpperCase();
+                    const airlinecode = inputs.flight_airlinecode.toUpperCase().trim();
+                    const flightType = inputs.flight_type;
+                    const flightClass = inputs.flight_class;
+                    const pax = inputs.flight_pax;
+                    const nonstop = inputs.flight_nonstop;
+
+                    // 获取城市名称 (需要从加载的数据中获取)
+                    const dcityname = this.cityData?.[dcitycode] || dcitycode;
+                    const acityname = this.cityData?.[acitycode] || acitycode;
+                    const routeName = `${dcityname}-to-${acityname}`;
+
+                    // 生成日期
+                    const today = new Date();
+                    const ddate = today.toISOString().split('T')[0];
+                    const rdate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+                    // Universal Link
+                    let universalLink = `https://${region}.trip.com/flights/${routeName}/tickets-${dcitycode}-${acitycode}?FlightWay=${flightType}&class=${flightClass}&quantity=${pax}&ddate=${ddate}&rdate=${rdate}`;
+
+                    // 只有航司代码不为空时才添加
+                    if (airlinecode) {
+                        universalLink += `&airline=${airlinecode}`;
+                    }
+
+                    if (nonstop === 'T') {
+                        universalLink += '&nonstop=on';
+                    }
+
+                    // Deeplink - 只有航司代码不为空时才包含
+                    let deeplink = `ctripglobal://FlightListAB/?dct=${dcitycode}&act=${acitycode}&ddt=${ddate}&tp=i`;
+                    if (airlinecode) {
+                        deeplink += `&al=${airlinecode}`;
+                    }
+
+                    return {
+                        flight_universal: universalLink,
+                        flight_deeplink: deeplink
+                    };
+                }
+            }
+        };
+
+        // ============ UI 生成和管理 ============
+
+        class LinkGenerator {
+            constructor() {
+                this.currentScene = 'activityPage';
+                this.inputValues = {};
+                this.checkboxValues = {};
+                this.init();
+            }
+
+            async init() {
+                this.renderTabs();
+                this.renderScene(this.currentScene);
+                // 加载机票城市数据
+                await sceneConfigs.flightList.loadCityData();
+            }
+
+            renderTabs() {
+                const tabsContainer = document.getElementById('sceneTabs');
+                tabsContainer.innerHTML = '';
+                Object.values(sceneConfigs).forEach(config => {
+                    const btn = document.createElement('button');
+                    btn.className = `tab-btn ${config.id === this.currentScene ? 'active' : ''}`;
+                    btn.textContent = config.name;
+                    btn.onclick = () => this.switchScene(config.id);
+                    tabsContainer.appendChild(btn);
+                });
+            }
+
+            switchScene(sceneId) {
+                this.currentScene = sceneId;
+                this.renderTabs();
+                this.renderScene(sceneId);
+            }
+
+            renderScene(sceneId) {
+                const config = sceneConfigs[sceneId];
+                const container = document.getElementById('scenesContainer');
+                container.innerHTML = '';
+
+                const sceneDiv = document.createElement('div');
+                sceneDiv.className = 'scene active';
+
+                // 输入区域
+                if (config.inputs.length > 0 || config.checkboxes.length > 0) {
+                    const inputSection = document.createElement('div');
+                    inputSection.className = 'section';
+                    inputSection.innerHTML = '<div class="section-title">输入配置</div>';
+
+                    if (config.inputs.length > 0) {
+                        const inputGroup = document.createElement('div');
+                        inputGroup.className = 'input-group';
+
+                        config.inputs.forEach(input => {
+                            const field = document.createElement('div');
+                            const isSelect = input.type === 'select';
+                            field.className = isSelect ? 'form-field' : 'form-field input-field';
+
+                            const label = document.createElement('label');
+                            label.textContent = input.label;
+                            field.appendChild(label);
+
+                            let element;
+                            if (input.type === 'select') {
+                                element = document.createElement('select');
+                                element.id = input.id;
+                                input.options.forEach(opt => {
+                                    const option = document.createElement('option');
+                                    option.value = opt.value;
+                                    option.textContent = opt.label;
+                                    element.appendChild(option);
+                                });
+                            } else if (input.type === 'number') {
+                                element = document.createElement('input');
+                                element.id = input.id;
+                                element.type = 'number';
+                                element.placeholder = input.placeholder;
+                                element.min = '1';
+                                element.max = '9';
+                            } else {
+                                element = document.createElement('input');
+                                element.id = input.id;
+                                element.type = 'text';
+                                element.placeholder = input.placeholder;
+                            }
+
+                            element.value = input.defaultValue;
+                            element.addEventListener('change', () => this.updateAndGenerate(sceneId));
+                            element.addEventListener('input', () => this.updateAndGenerate(sceneId));
+
+                            field.appendChild(element);
+                            inputGroup.appendChild(field);
+                        });
+
+                        inputSection.appendChild(inputGroup);
+                    }
+
+                    if (config.checkboxes.length > 0) {
+                        const checkboxGroup = document.createElement('div');
+                        checkboxGroup.className = 'checkbox-group';
+
+                        config.checkboxes.forEach(checkbox => {
+                            const item = document.createElement('div');
+                            item.className = 'checkbox-item';
+
+                            const input = document.createElement('input');
+                            input.type = 'checkbox';
+                            input.id = checkbox.id;
+                            input.checked = checkbox.defaultValue;
+                            input.addEventListener('change', () => this.updateAndGenerate(sceneId));
+
+                            const label = document.createElement('label');
+                            label.htmlFor = checkbox.id;
+                            label.textContent = checkbox.label;
+
+                            item.appendChild(input);
+                            item.appendChild(label);
+                            checkboxGroup.appendChild(item);
+                        });
+
+                        inputSection.appendChild(checkboxGroup);
+                    }
+
+                    sceneDiv.appendChild(inputSection);
+                }
+
+                // 输出区域
+                const outputSection = document.createElement('div');
+                outputSection.className = 'section';
+                outputSection.innerHTML = '<div class="section-title">生成结果</div>';
+
+                config.outputs.forEach(output => {
+                    const outputBox = document.createElement('div');
+                    outputBox.className = 'output-section';
+
+                    const label = document.createElement('div');
+                    label.className = 'output-label';
+                    label.textContent = output.label;
+                    outputBox.appendChild(label);
+
+                    const item = document.createElement('div');
+                    item.className = 'output-item';
+
+                    const content = document.createElement('div');
+                    content.className = 'output-content';
+
+                    const link = document.createElement('div');
+                    link.id = output.id;
+                    link.className = 'output-link';
+                    link.textContent = '加载中...';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.textContent = '复制';
+                    btn.onclick = (e) => this.copyToClipboard(output.id, e);
+
+                    content.appendChild(link);
+                    content.appendChild(btn);
+                    item.appendChild(content);
+                    outputBox.appendChild(item);
+
+                    outputSection.appendChild(outputBox);
+                });
+
+                sceneDiv.appendChild(outputSection);
+
+                // 重置按钮
+                const buttonSection = document.createElement('div');
+                buttonSection.className = 'section';
+                buttonSection.style.marginBottom = '0';
+
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'reset-btn';
+                resetBtn.textContent = '重置表单';
+                resetBtn.onclick = () => this.resetScene(sceneId);
+
+                buttonSection.appendChild(resetBtn);
+                sceneDiv.appendChild(buttonSection);
+
+                container.appendChild(sceneDiv);
+
+                // 生成初始链接
+                this.updateAndGenerate(sceneId);
+            }
+
+            updateAndGenerate(sceneId) {
+                const config = sceneConfigs[sceneId];
+
+                // 收集输入值
+                const inputs = {};
+                config.inputs.forEach(input => {
+                    const element = document.getElementById(input.id);
+                    inputs[input.id] = element ? element.value : input.defaultValue;
+                });
+
+                // 收集复选框值
+                const checkboxes = {};
+                config.checkboxes.forEach(checkbox => {
+                    const element = document.getElementById(checkbox.id);
+                    checkboxes[checkbox.id] = element ? element.checked : checkbox.defaultValue;
+                });
+
+                this.inputValues[sceneId] = inputs;
+                this.checkboxValues[sceneId] = checkboxes;
+
+                // 生成链接
+                const results = config.generate(inputs, checkboxes);
+
+                // 显示结果
+                Object.entries(results).forEach(([outputId, value]) => {
+                    const element = document.getElementById(outputId);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                });
+            }
+
+            resetScene(sceneId) {
+                const config = sceneConfigs[sceneId];
+
+                config.inputs.forEach(input => {
+                    const element = document.getElementById(input.id);
+                    if (element) {
+                        element.value = input.defaultValue;
+                    }
+                });
+
+                config.checkboxes.forEach(checkbox => {
+                    const element = document.getElementById(checkbox.id);
+                    if (element) {
+                        element.checked = checkbox.defaultValue;
+                    }
+                });
+
+                this.updateAndGenerate(sceneId);
+            }
+
+            copyToClipboard(elementId, event) {
+                const element = document.getElementById(elementId);
+                const text = element.textContent;
+                const btn = event.target;
+                const originalText = btn.textContent;
+
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+
+                try {
+                    textarea.select();
+                    textarea.setSelectionRange(0, 99999);
+                    const successful = document.execCommand('copy');
+
+                    if (successful) {
+                        btn.textContent = '✓ 已复制';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.classList.remove('copied');
+                        }, 2000);
+                    }
+                } catch (err) {
+                    alert('✓ 链接已选中，请按 Ctrl+C (或 Cmd+C) 复制');
+                } finally {
+                    document.body.removeChild(textarea);
+                }
+            }
+        }
+
+        // 初始化
+        const generator = new LinkGenerator();
+    </script>
+</body>
+</html>
