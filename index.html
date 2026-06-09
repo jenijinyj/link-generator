@@ -1,797 +1,533 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Generator - Multi-Scenario</title>
+    <title>Page Link Generator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+            background: #f5f5f5;
+            font-size: 14px;
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
+            padding: 20px;
             text-align: center;
         }
-
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 0 20px;
         }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
         .tabs {
             display: flex;
-            gap: 0;
-            background: #f5f5f5;
-            border-bottom: 2px solid #e0e0e0;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px;
         }
-
         .tab-btn {
-            flex: 1;
-            padding: 16px;
-            background: transparent;
+            padding: 10px 16px;
             border: none;
+            background: white;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            color: #666;
+            border-radius: 4px;
             transition: all 0.3s;
-            text-align: center;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
         }
-
-        .tab-btn:hover {
-            background: #efefef;
-        }
-
         .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .tab-btn:hover {
+            background: #ddd;
+        }
+        .panel {
             background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-
-        .content {
-            padding: 40px;
+        .form-group {
+            margin-bottom: 15px;
         }
-
-        .scene {
-            display: none;
-        }
-
-        .scene.active {
+        .form-group label {
             display: block;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section-title {
-            font-size: 18px;
+            margin-bottom: 5px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            font-size: 13px;
         }
-
-        .input-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
         }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-field.input-field {
-            padding: 12px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 6px;
-        }
-
-        .form-field.input-field label {
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        input, select {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
         .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
-
-        .checkbox-item {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
-            margin-bottom: 0;
-            cursor: pointer;
-        }
-
-        .output-section {
+            padding: 8px;
             background: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .output-item {
-            margin-bottom: 20px;
-        }
-
-        .output-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #667eea;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .output-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .output-link {
-            flex: 1;
-            padding: 12px;
-            background: white;
-            border: 1px solid #e0e0e0;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #333;
-            word-break: break-all;
-            max-height: 120px;
-            overflow-y: auto;
         }
-
-        .copy-btn {
-            padding: 10px 16px;
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .btn-generate {
+            width: 100%;
+            padding: 12px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
             font-weight: 600;
-            transition: background 0.3s, transform 0.2s;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .btn-generate:hover {
+            background: #5568d3;
+        }
+        .output-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        .output-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .output-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .output-content {
+            flex: 1;
+            font-size: 13px;
+            font-family: 'Segoe UI', monospace;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+        .btn-copy {
+            font-size: 11px;
+            padding: 8px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
         }
-
-        .copy-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-
-        .copy-btn.copied {
-            background: #4caf50;
-        }
-
-        .help-text {
-            font-size: 12px;
-            color: #999;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        .reset-btn {
-            padding: 12px 24px;
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .reset-btn:hover {
-            background: #e0e0e0;
-            border-color: #999;
+        .btn-copy:hover { background: #5568d3; }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>🔗 Page Link Generator</h1>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+
     <div class="container">
-        <div class="header">
-            <h1>🔗 Link Generator</h1>
-            <p>Multi-Scenario Link Generation Tool</p>
-        </div>
-
-        <!-- Scene Tabs -->
-        <div class="tabs" id="sceneTabs"></div>
-
-        <!-- Content Area -->
-        <div class="content" id="scenesContainer"></div>
+        <div class="panel" id="formPanel"></div>
+        <div class="panel" id="outputPanel"></div>
     </div>
 
     <script>
-        // ============ Scene Configurations ============
+        const regionMap = {
+            'sg': {prefix: 'sg', curr: 'SGD', locale: 'en-SG'},
+            'my': {prefix: 'my', curr: 'MYR', locale: 'en-MY'},
+            'id': {prefix: 'id', curr: 'IDR', locale: 'id-ID'},
+            'th': {prefix: 'th', curr: 'THB', locale: 'th-TH'},
+            'ph': {prefix: 'ph', curr: 'PHP', locale: 'en-PH'},
+            'vn': {prefix: 'vn', curr: 'VND', locale: 'vi-VN'},
+            'hk': {prefix: 'hk', curr: 'HKD', locale: 'zh-HK'},
+            'tw': {prefix: 'tw', curr: 'TWD', locale: 'zh-TW'},
+            'jp': {prefix: 'jp', curr: 'JPY', locale: 'ja-JP'},
+            'kr': {prefix: 'kr', curr: 'KRW', locale: 'ko-KR'},
+            'au': {prefix: 'au', curr: 'AUD', locale: 'en-AU'}
+        };
+
+        const citiesData = {"Shanghai": "2", "Bangkok": "359", "Tokyo": "228", "Guangzhou": "32", "Seoul": "274", "Osaka": "219", "Beijing": "1", "Shenzhen": "30", "Hong Kong": "58", "Taipei": "617", "Kuala Lumpur": "315", "Phuket": "725", "Pattaya": "622", "Fukuoka": "248", "Chongqing": "4", "Chengdu": "28", "Busan": "253", "Bali": "723", "Singapore": "73", "Ho Chi Minh City": "301", "Kyoto": "734", "Sapporo": "641", "Da Nang": "1356", "Hangzhou": "17", "Chiang Mai": "623", "Nha Trang": "1777", "Zhuhai": "31", "Nagoya": "36194", "Naha": "92573", "Istanbul": "532", "Zhangjiajie": "27", "Xi'an": "10", "Sanya": "43", "Hanoi": "286", "Macau": "59", "Paris": "192", "London": "338", "Jeju City": "737", "Qingdao": "7", "Dubai": "220", "Xiamen": "25", "Foshan": "251", "Taichung": "3849", "Incheon": "410", "Kaohsiung": "720", "Seogwipo": "35796", "Phu Quoc Island": "5649", "Kunming": "34", "George Town": "35926", "Suzhou": "14", "Johor Bahru": "1376", "Nanjing": "12", "Lijiang": "37", "Harbin": "5", "Barcelona": "40795", "Krabi Town": "1405", "Zhongshan": "553", "Central Jakarta": "140744", "Koh Samui": "1229", "Dali City": "36", "Hat Yai": "1480", "Rome": "343", "Yiwu": "536", "New York": "633", "Yokohama": "271", "Kota Kinabalu": "1393", "Changsha": "206", "Yangshuo": "871", "Phnom Penh": "303", "New Taipei City": "7662", "Dalian": "6", "Tainan": "3847", "Boracay Island": "1391", "Sendai": "585", "Dongguan": "223", "Wuhan": "477", "Amsterdam": "176", "Vientiane": "486", "Madrid": "357", "Las Vegas": "26282", "Melbourne": "358", "Melaka": "62", "Makati": "62744", "Kobe": "423", "Makkah": "3744", "Taoyuan": "7570", "Petaling Jaya": "80384", "Vienna": "651", "Langkawi": "1225", "Pasay": "121853", "Kumamoto City": "4009", "Milan": "361", "Cebu City": "35831", "Berlin": "193", "Hiroshima City": "262", "Genting Highlands": "64", "Hua Hin": "3759", "Guilin": "33", "South Jakarta": "175609", "Budapest": "637", "City of Manila": "364", "Lisbon": "1231", "Shangri-La": "660", "Urayasu": "35751", "Hoi An": "1775", "Hakodate": "800", "Gangneung-si": "61325", "Tianjin": "3", "Munich": "363", "Shantou": "447", "Narita": "35714", "Prague": "1288", "Fuzhou": "258", "Yilan": "7614", "Daegu": "1287", "Kuching": "1384", "Ipoh": "1375", "Fujikawaguchiko": "50160", "Kanazawa": "3663", "Gyeongju": "3675", "Sokcho-si": "35793", "Siem Reap": "1369", "Venice": "688", "Sydney": "501", "Chatan": "62278", "Jiuzhaigou": "91", "Haikou": "42", "Khon Kaen": "1477", "Lapu-Lapu City": "72311", "Copenhagen": "260", "Los Angeles": "347", "Chiang Rai": "647", "Bang Phli": "77501", "Guiyang": "38", "Beppu": "4828", "Paranaque": "121851", "Tashkent": "639", "Shenyang": "451", "Florence": "687", "West Jakarta": "137892", "Honolulu": "757", "Hualien": "6954", "Pingtung": "5589", "Frankfurt": "250", "Onna": "35725", "Cam Lam District": "685438", "Chaozhou": "215", "Medina": "19744", "Nanning": "380", "Daejeon": "61292", "Yeosu": "4016", "Izumisano": "35754", "Nice": "775", "Ningbo": "375", "Takayama City": "3666", "Udon Thani": "61716", "Taitung": "3848", "Urumqi": "39", "Auckland": "678", "Luoyang": "350", "Almaty": "174", "Jinan": "144", "Chiba City": "4249", "Nantou": "7524", "San Francisco": "313", "Chon Buri City": "36029", "Huizhou": "299", "Athens": "710", "Zhengzhou": "559", "North Jakarta": "131596", "Takamatsu": "5999", "Koh Samet": "7535", "Edinburgh": "706", "Koh Chang": "3764", "Sepang": "35949", "Wuxi": "13", "Moscow": "366", "Chiayi City": "5152", "Yantai": "533", "Fenghuang County": "866", "Kitakyushu City": "3234", "Kagoshima City": "735", "TT. Sa Pa": "458395", "Sattahip": "696913", "Si Racha": "696921", "Tbilisi": "7612", "Abu Dhabi": "766", "Miyakojima": "50334", "Rio de Janeiro": "769", "Antalya": "1217", "Colombo": "810", "Dalat": "5204", "Doha": "1401", "Asahikawa": "4280", "Quezon City": "61021", "Qingyuan": "1422", "New Delhi": "495", "Hakone": "1165", "Tongxiang": "580", "Shah Alam": "76462", "Haymarket": "699370", "Nago": "35747", "Matsuyama": "1698", "Panglao Municipality": "35804", "Otaru": "35773", "Toronto": "461", "Rayong City": "36064", "Jiangmen": "316", "Yongshun": "21508", "Vancouver": "476", "Quanzhou": "406", "Pak Kret": "35977", "Cairo": "332", "Kathmandu": "304", "Luang Prabang": "3677", "Sihanoukville": "3294", "Huangshan City": "23", "Phi Phi Islands": "1228", "Riyadh": "789", "Manchester": "722", "Seville": "1350", "Koh Larn": "35996", "Nakhon Ratchasima": "5392", "Jeonju": "61380", "Brussels": "196", "Matsumoto": "62496", "Chitose": "4253", "Weihai": "479", "Goyang-si": "61345", "Toyama City": "570", "Yerevan": "3245", "Ishigaki": "1174", "Aomori City": "4351", "Plentong": "128803", "Okayama City": "263", "Surat Thani": "1479", "Subang Jaya": "35937", "Suwon": "5980", "Ulsan": "3368", "Yanji": "523", "Orlando": "1187", "Zurich": "434", "Warsaw": "293", "Kawasaki City": "35717", "Gwangju": "738", "Cha-am": "36088", "Mumbai": "724", "Phan Thiet": "4134", "Jeddah": "801", "Chicago": "549", "Seongnam": "61636", "Miri": "3380", "Hohhot": "103", "Nagano City": "4123", "Nagasaki City": "205", "Nonthaburi": "36081", "Saint Petersburg": "798", "Iskandar Puteri": "76452", "Gotemba": "50248", "Takua Pa": "79294", "Mexico City": "691", "Stockholm": "420", "Pak Chong": "36021", "Dublin": "803", "Hefei": "278", "Benda": "697244", "Porto": "826", "Yufu": "62275", "Taguig": "35808", "Jianyang": "7744", "Karuizawa": "35752", "Hsinchu": "3845", "Shizuoka City": "1176", "Nanchang": "376", "Perth": "681", "Samut Prakan": "59998", "Queenstown": "3860", "Angeles": "35799", "Puchong": "35925", "Baku": "650", "Heihe": "281", "Batu Ferringhi": "94061", "Shanwei": "1436", "Zhaoqing": "552", "Kuala Kuantan": "128877", "Changwon": "35787", "Sao Paulo": "415", "Changchun": "158", "Penghu": "7805", "Yongin-si": "90727", "Surfers Paradise": "698428", "Datong": "136", "Vung Tau": "7529", "Hamburg": "763", "Shaoxing": "22", "Koh Phangan": "36057", "Niigata City": "1163", "Marrakech": "1360", "Miyazaki City": "1779", "Koh Lipe": "36062", "Furano": "4157", "Shangrao": "411", "Cologne": "709", "Jinghong": "309", "Helsinki": "277", "Motobu": "50335", "Ubon Ratchathani": "6160", "Cheongju": "736", "Fujiyoshida": "50161", "Reykjavik": "831", "Dujiangyan": "94", "Kuala Terengganu": "72", "Ulaanbaatar": "483", "Hurghada": "3471", "Yuzawa": "50133", "Central Semarang": "146333", "Brisbane": "680", "Saitama City": "20749", "Sharm El Sheikh": "36242", "Wenzhou": "491", "Rotterdam": "718", "Tamuning": "259802", "Bayan Lepas": "75182", "Jiaozhou": "1043", "Kota Bharu": "1377", "Bintan": "1573", "El Nido": "4027", "Depok": "92691", "Koh Tao": "19957", "Nara City": "1175", "Tebrau": "128641", "Phitsanulok": "5587", "Minsk": "854", "Belgrade": "10257", "Muscat": "853", "Nakhon Si Thammarat City": "5449", "Salzburg": "739", "Yamagata City": "6776", "Cape Town": "683", "Gimpo-si": "61335", "Batam Center": "706877", "Davao City": "1458", "Krakow": "1343", "Yangzhou": "15", "Birmingham": "1270", "Marseille": "712", "Roissy-en-France": "80383", "Taishan": "729", "Christchurch": "7505", "Morioka": "6925", "Chiayi County": "650358", "Goreme": "9660", "Yulong": "21360", "Boston": "26848", "Dusseldorf": "762", "Richmond": "66387", "Anaheim": "3777", "Yangyang": "6430", "Tanjung Bungah": "75183", "Mandaue City": "90377", "Pyeongchang-gun": "35792", "Atami": "20750", "Sumur Bandung": "136315", "Hounslow": "10287", "Kaiping": "335", "Chennai": "1235", "Cheonan-si": "58525", "Vang Vieng": "35797", "Toyako": "50390", "Kinmen": "7203", "Bandar Penawar": "128716", "Lanzhou": "100", "Ha Long City": "1390", "Valencia": "1351", "Cairns": "728", "Glasgow": "780", "Noboribetsu": "35724", "Samarkand": "5881", "Chuncheon-si": "35788", "Qinhuangdao": "147", "Lyon": "713", "Gili Trawangan": "36175", "Montreal": "759", "Phra Nakhon Si Ayutthaya": "36030", "Taiyuan": "105", "Okinawa City": "207", "Kashgar City": "109", "Washington D.C.": "26363", "Genteng": "744149", "Putrajaya": "92559", "Miami Beach": "3798", "Medan": "1380", "Goseong-gun": "78910", "Puerto Princesa": "7515", "Xiaojin": "21609", "Kuantan": "1249", "Xining": "124", "Calgary": "761", "Naples": "1262", "Changzhou": "213", "Semporna": "61634", "Dunhuang": "11", "Dallas": "705", "Iloilo City": "6998", "Ginowan": "50331", "Jinjiang": "1803", "Oslo": "827", "Buenos Aires": "807", "Sasebo": "35784", "Nantong": "82", "Sibu": "1389", "Gedong Tengen": "168130", "Lampang": "7359", "Brinchang": "35869", "Jeongseon-gun": "61379", "Coron": "86134", "San Diego": "698", "Interlaken": "3167", "Hwaseong-si": "61371", "Bengaluru": "1355", "Hue": "1776", "Casablanca": "809", "Pyeongtaek-si": "61580", "Kutchan": "92450", "Hunchun": "4137", "Batu Ampar": "36154", "St Julian's": "39120", "Tanah Rata": "35870", "Zhoushan": "19", "Bac Ninh": "61178", "Koh Lanta": "90741", "Palembang": "1468", "Tawau": "1387", "Tokoname": "62273", "Huidong": "21976", "Adelaide": "1243", "Jingdezhen": "305", "Pingyao County": "104", "Labuan Bajo": "7291", "Kanchanaburi City": "36027", "Sekudai": "35934", "Utsunomiya": "35778", "Bukit Mertajam": "59787", "Liverpool": "3187", "Cancun": "812", "Kunshan": "83", "Sharjah": "742", "Bintulu": "1383", "Mokpo": "3986", "Pohang": "3369", "Himeji": "35781", "Yomitan": "50340", "Donggongon": "94324", "Granada": "717", "Geoje-si": "61331", "Santorini": "3576", "Sadao": "90661", "Nairobi": "825", "Dhaka": "733", "Nikko": "4190", "Seattle": "511", "Yamanakako": "50166", "Malaga": "1268", "Tokushima City": "1172", "Zhangjiakou": "550", "Alor Setar": "1374", "Mascot": "699562", "Dongyang": "755", "Astana": "3263", "Pasig": "121857", "Wonju": "72358", "Gunsan": "7254", "Hoofddorp": "38449", "Baguio": "4510", "Itoman": "35746", "Ise": "50171", "Geneva": "666", "Port Dickson": "3916", "Chanthaburi City": "36043", "Bishkek": "642", "Antwerp": "1767", "Houston": "26619", "Wakayama City": "20754", "Gimhae-si": "61334", "Yining City": "529", "Huzhou": "86", "Zhangzhou": "560", "Lucerne": "40039", "Agadir": "3682", "Batumi": "4912", "Nakhon Sawan": "59985", "Shirahama": "5864", "Kamakura": "50150", "Antu": "1466", "East Perth": "325314", "Khlong Luang": "90743", "Banff": "7725", "Hobart": "1446", "Oita City": "1286", "Southbank": "324466", "Denver": "20099", "Obihiro": "5471", "Vladivostok": "628", "Emeishan City": "95", "Paju-si": "61533", "Suifenhe": "421", "Dien Ban": "77068", "Shijiazhuang": "428", "Shishi": "444", "Sandakan": "1382", "Klaeng": "62179", "Bucharest": "674", "Kushiro City": "3982", "Keelung": "7810", "Niseko": "35726", "General Luna": "62741", "Otsu": "35720", "Kyauktada": "801471", "Bandung Wetan": "138449", "East Jakarta": "143377", "Yonago": "6383", "Kochi City": "1173", "Manzhouli": "1083", "Seri Kembangan": "35933", "Haiphong": "6942", "Miami": "25773", "Kaifeng": "331", "Donghae-si": "58529", "Lhasa": "41", "Fukui City": "20752", "Zhanjiang": "547", "Hoa Lu District": "455888"};
+        const poiCitiesData = {"Shanghai": "2", "Bangkok": "191", "Tokyo": "294", "Guangzhou": "152", "Seoul": "234", "Osaka": "293", "Beijing": "1", "Shenzhen": "26", "Hong Kong": "38", "Taipei": "360", "Kuala Lumpur": "45", "Phuket": "364", "Pattaya": "360", "Fukuoka": "576", "Chongqing": "158", "Chengdu": "104", "Busan": "432", "Bali": "438", "Singapore": "53", "Ho Chi Minh City": "434", "Sapporo": "1878", "Da Nang": "669", "Hangzhou": "14", "Chiang Mai": "209", "Nha Trang": "670", "Zhuhai": "27", "Nagoya": "2127", "Istanbul": "258", "Zhangjiajie": "23", "Xi'an": "7", "Sanya": "61", "Hanoi": "181", "Macau": "39", "Paris": "308", "London": "309", "Qingdao": "5", "Dubai": "1062", "Xiamen": "21", "Foshan": "207", "Taichung": "1369", "Incheon": "174", "Kaohsiung": "756", "Kunming": "29", "Suzhou": "10", "Johor Bahru": "1377", "Nanjing": "9", "Lijiang": "32", "Harbin": "151", "Krabi Town": "616", "Zhongshan": "233", "Koh Samui": "566", "Rome": "303", "Yiwu": "1005", "New York": "248", "Yokohama": "473", "Kota Kinabalu": "583", "Changsha": "148", "Phnom Penh": "489", "New Taipei City": "2038", "Dalian": "4", "Tainan": "757", "Sendai": "1535", "Dongguan": "315", "Wuhan": "145", "Amsterdam": "299", "Vientiane": "749", "Madrid": "378", "Melbourne": "312", "Melaka": "42", "Kobe": "451", "Taoyuan": "1869", "Vienna": "439", "Langkawi": "539", "Kumamoto City": "1191", "Milan": "304", "Berlin": "306", "Hiroshima City": "1211", "Genting Highlands": "42", "Hua Hin": "1899", "Guilin": "28", "Budapest": "1109", "City of Manila": "367", "Lisbon": "574", "Shangri-La": "147", "Tianjin": "154", "Munich": "572", "Shantou": "620", "Prague": "822", "Fuzhou": "164", "Daegu": "1340", "Kuching": "781", "Kanazawa": "1552", "Gyeongju": "1552", "Siem Reap": "599", "Venice": "340", "Sydney": "236", "Jiuzhaigou": "25", "Haikou": "37", "Lapu-Lapu City": "4667", "Copenhagen": "449", "Chiang Rai": "551", "Guiyang": "33", "Shenyang": "155", "Florence": "341", "Honolulu": "2060", "Hualien": "1366", "Frankfurt": "305", "Chaozhou": "206", "Nanning": "166", "Nice": "580", "Ningbo": "83", "Takayama City": "1552", "Taitung": "760", "Urumqi": "117", "Auckland": "320", "Luoyang": "198", "Jinan": "128", "Nantou": "1358", "San Francisco": "249", "Huizhou": "213", "Athens": "382", "Zhengzhou": "157", "Koh Samet": "1358", "Edinburgh": "389", "Koh Chang": "1899", "Wuxi": "10", "Moscow": "358", "Chiayi City": "758", "Yantai": "170", "Kagoshima City": "1326", "Abu Dhabi": "1353", "Rio de Janeiro": "932", "Antalya": "549", "Colombo": "753", "Dalat": "1393", "Doha": "1733", "Qingyuan": "720", "New Delhi": "592", "Hakone": "1830", "Tongxiang": "402", "Toronto": "355", "Jiangmen": "45", "Yongshun": "2979", "Vancouver": "354", "Quanzhou": "243", "Cairo": "326", "Kathmandu": "482", "Luang Prabang": "1552", "Sihanoukville": "1032", "Riyadh": "947", "Manchester": "588", "Seville": "380", "Brussels": "298", "Chitose": "1773", "Weihai": "169", "Toyama City": "1206", "Yanji": "475", "Orlando": "1827", "Zurich": "301", "Warsaw": "1261", "Gwangju": "433", "Mumbai": "584", "Phan Thiet": "344", "Jeddah": "1674", "Chicago": "254", "Hohhot": "156", "Nagano City": "1485", "Saint Petersburg": "359", "Mexico City": "352", "Stockholm": "451", "Dublin": "819", "Hefei": "196", "Porto": "1708", "Shizuoka City": "1217", "Nanchang": "175", "Queenstown": "2037", "Heihe": "265", "Zhaoqing": "497", "Sao Paulo": "933", "Changchun": "216", "Datong": "275", "Vung Tau": "1358", "Hamburg": "573", "Shaoxing": "479", "Niigata City": "1830", "Marrakech": "1748", "Shangrao": "547", "Cologne": "388", "Jinghong": "171", "Helsinki": "452", "Cheongju": "1468", "Reykjavik": "1044", "Hurghada": "1098", "Brisbane": "323", "Wenzhou": "153", "Rotterdam": "393", "Jiaozhou": "869", "Bintan": "777", "El Nido": "1173", "Minsk": "1858", "Muscat": "1861", "Salzburg": "440", "Cape Town": "327", "Krakow": "1262", "Yangzhou": "12", "Birmingham": "1059", "Taishan": "453", "Christchurch": "695", "Yulong": "2973", "Dusseldorf": "700", "Anaheim": "1899", "Chennai": "2015", "Kinmen": "1368", "Lanzhou": "231", "Valencia": "1080", "Cairns": "453", "Glasgow": "713", "Qinhuangdao": "132", "Lyon": "391", "Montreal": "661", "Taiyuan": "167", "Kashgar City": "2507", "Miami Beach": "1899", "Medan": "1742", "Xiaojin": "2172", "Kuantan": "1113", "Xining": "237", "Calgary": "1430", "Naples": "747", "Changzhou": "206", "Dunhuang": "8", "Dallas": "1048", "Oslo": "450", "Buenos Aires": "931", "Nantong": "85", "San Diego": "1954", "Bengaluru": "1752", "Hue": "667", "Casablanca": "1693", "Hunchun": "344", "Zhoushan": "479", "Adelaide": "626", "Jingdezhen": "405", "Pingyao County": "156", "Liverpool": "1610", "Cancun": "1412", "Kunshan": "85", "Sharjah": "2094", "Bintulu": "1931", "Granada": "379", "Nairobi": "795", "Seattle": "253", "Malaga": "1811", "Tokushima City": "1068", "Zhangjiakou": "497", "Dongyang": "608", "Wonju": "4667", "Geneva": "302", "Antwerp": "1029", "Yining City": "2058", "Huzhou": "68", "Zhangzhou": "157", "Agadir": "1728", "Hobart": "629", "Vladivostok": "4690", "Suifenhe": "451", "Shijiazhuang": "199", "Shishi": "620", "Bucharest": "1229", "Manzhouli": "319", "Haiphong": "180", "Kaifeng": "429", "Lhasa": "36", "Zhanjiang": "202"};
+
+        function getCityId(cityName) {
+            if (citiesData[cityName]) return citiesData[cityName];
+            for (let key in citiesData) {
+                if (key.toLowerCase() === cityName.toLowerCase()) return citiesData[key];
+            }
+            return cityName;
+        }
+
+        function getPoiCityId(cityName) {
+            if (poiCitiesData[cityName]) return poiCitiesData[cityName];
+            for (let key in poiCitiesData) {
+                if (key.toLowerCase() === cityName.toLowerCase()) return poiCitiesData[key];
+            }
+            return cityName;
+        }
+
+        function formatDate(date) {
+            const yr = date.getFullYear();
+            const mo = String(date.getMonth() + 1).padStart(2, '0');
+            const da = String(date.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
 
         const sceneConfigs = {
-            // Scene 1: Activity Page Link
-            activityPage: {
-                id: 'activityPage',
-                name: 'Activity Page Link',
+            campaign: {
+                name: '1. Campaign',
                 inputs: [
-                    {
-                        id: 'act_currency',
-                        label: 'Currency (Curr)',
-                        type: 'select',
-                        options: [
-                            { value: 'SGD', label: 'SGD - Singapore Dollar' },
-                            { value: 'USD', label: 'USD - US Dollar' },
-                            { value: 'CNY', label: 'CNY - Chinese Yuan' },
-                            { value: 'HKD', label: 'HKD - Hong Kong Dollar' },
-                            { value: 'MYR', label: 'MYR - Malaysian Ringgit' },
-                            { value: 'THB', label: 'THB - Thai Baht' },
-                            { value: 'IDR', label: 'IDR - Indonesian Rupiah' },
-                            { value: 'PHP', label: 'PHP - Philippine Peso' },
-                            { value: 'VND', label: 'VND - Vietnamese Dong' },
-                            { value: 'AUD', label: 'AUD - Australian Dollar' },
-                            { value: 'NZD', label: 'NZD - New Zealand Dollar' },
-                            { value: 'EUR', label: 'EUR - Euro' },
-                            { value: 'GBP', label: 'GBP - British Pound' },
-                            { value: 'JPY', label: 'JPY - Japanese Yen' },
-                            { value: 'KRW', label: 'KRW - South Korean Won' }
-                        ],
-                        defaultValue: 'SGD'
-                    },
-                    {
-                        id: 'act_path',
-                        label: 'Path',
-                        type: 'text',
-                        placeholder: 'e.g. memberday, sales, promo',
-                        defaultValue: 'memberday'
-                    }
-                ],
-                checkboxes: [
-                    {
-                        id: 'act_withParams',
-                        label: 'Include optional parameters (transparentBar=1&wkp=1)',
-                        defaultValue: true
-                    }
+                    {id: 'campaign_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'campaign_path', label: 'Path', type: 'text', defaultValue: 'memberday'},
+                    {id: 'campaign_params', label: 'Include params', type: 'checkbox', defaultValue: false}
                 ],
                 outputs: [
-                    { id: 'act_universal1', label: '📱 Universal Link (First Locale)' },
-                    { id: 'act_universal2', label: '📱 Universal Link (Second Locale)' },
-                    { id: 'act_simplest', label: '⚡ Simplest Link' },
-                    { id: 'act_deeplink', label: '🔀 Deeplink' }
+                    {id: 'campaign_u1', label: 'Universal'},
+                    {id: 'campaign_simple', label: 'Simplest'},
+                    {id: 'campaign_deeplink', label: 'Deeplink'}
                 ],
-                currencyMap: {
-                    'SGD': { prefix: 'sg', locale1: 'en-SG', locale2: 'zh-SG' },
-                    'USD': { prefix: 'us', locale1: 'en-US', locale2: 'zh-US' },
-                    'CNY': { prefix: 'cn', locale1: 'zh-CN', locale2: 'zh-CN' },
-                    'HKD': { prefix: 'hk', locale1: 'en-HK', locale2: 'zh-HK' },
-                    'MYR': { prefix: 'my', locale1: 'en-MY', locale2: 'zh-MY' },
-                    'THB': { prefix: 'th', locale1: 'en-TH', locale2: 'th-TH' },
-                    'IDR': { prefix: 'id', locale1: 'en-ID', locale2: 'id-ID' },
-                    'PHP': { prefix: 'ph', locale1: 'en-PH', locale2: 'fil-PH' },
-                    'VND': { prefix: 'vn', locale1: 'en-VN', locale2: 'vi-VN' },
-                    'AUD': { prefix: 'au', locale1: 'en-AU', locale2: 'en-AU' },
-                    'NZD': { prefix: 'nz', locale1: 'en-NZ', locale2: 'en-NZ' },
-                    'EUR': { prefix: 'eu', locale1: 'en-EU', locale2: 'en-EU' },
-                    'GBP': { prefix: 'gb', locale1: 'en-GB', locale2: 'en-GB' },
-                    'JPY': { prefix: 'jp', locale1: 'en-JP', locale2: 'ja-JP' },
-                    'KRW': { prefix: 'kr', locale1: 'en-KR', locale2: 'ko-KR' }
-                },
-                generate(inputs, checkboxes) {
-                    const curr = inputs.act_currency;
-                    const path = inputs.act_path;
-                    const withParams = checkboxes.act_withParams;
+                generate(inputs) {
+                    const region = inputs.campaign_region;
+                    const path = inputs.campaign_path.trim();
+                    const info = regionMap[region];
+                    const url = `https://${info.prefix}.trip.com/sale/w/${path}.html`;
 
-                    const mapping = this.currencyMap[curr];
-                    const baseUrl = `https://${mapping.prefix}.trip.com/sale/w/${path}.html`;
+                    let simple = url;
+                    if (inputs.campaign_params) simple += `?&transparentBar=1&wkp=1`;
 
-                    const universal1 = withParams
-                        ? `${baseUrl}?locale=${mapping.locale1}&curr=${curr}&transparentBar=1&wkp=1`
-                        : `${baseUrl}?locale=${mapping.locale1}&curr=${curr}`;
-
-                    const universal2 = withParams
-                        ? `${baseUrl}?locale=${mapping.locale2}&curr=${curr}&transparentBar=1&wkp=1`
-                        : `${baseUrl}?locale=${mapping.locale2}&curr=${curr}`;
-
-                    const simplest = withParams
-                        ? `${baseUrl}?&transparentBar=1&wkp=1`
-                        : baseUrl;
-
-                    const deeplink = `ctripglobal://WebView?url=${encodeURIComponent(simplest)}`;
+                    let dl = `ctripglobal://WebView?url=${encodeURIComponent(url)}`;
+                    if (inputs.campaign_params) {
+                        dl = `ctripglobal://WebView?url=${encodeURIComponent(`${url}?locale=${info.locale}&curr=${info.curr}&transparentBar=1&wkp=1`)}`;
+                    }
 
                     return {
-                        act_universal1: universal1,
-                        act_universal2: universal2,
-                        act_simplest: simplest,
-                        act_deeplink: deeplink
+                        campaign_u1: `${url}?locale=${info.locale}&curr=${info.curr}&transparentBar=1`,
+                        campaign_simple: simple,
+                        campaign_deeplink: dl
                     };
                 }
             },
-
-            // Scene 2: Flight List Page Link
-            flightList: {
-                id: 'flightList',
-                name: 'Flight List Page Link',
+            flight: {
+                name: '2. Flight',
                 inputs: [
-                    {
-                        id: 'flight_region',
-                        label: 'Region',
-                        type: 'select',
-                        options: [
-                            { value: 'sg', label: 'sg - Singapore' },
-                            { value: 'my', label: 'my - Malaysia' },
-                            { value: 'id', label: 'id - Indonesia' },
-                            { value: 'th', label: 'th - Thailand' },
-                            { value: 'ph', label: 'ph - Philippines' },
-                            { value: 'vn', label: 'vn - Vietnam' },
-                            { value: 'hk', label: 'hk - Hong Kong' },
-                            { value: 'tw', label: 'tw - Taiwan' },
-                            { value: 'jp', label: 'jp - Japan' },
-                            { value: 'kr', label: 'kr - South Korea' },
-                            { value: 'au', label: 'au - Australia' }
-                        ],
-                        defaultValue: 'sg'
-                    },
-                    {
-                        id: 'flight_dcitycode',
-                        label: 'Departure City (City Code)',
-                        type: 'text',
-                        placeholder: 'e.g. SIN',
-                        defaultValue: 'SIN'
-                    },
-                    {
-                        id: 'flight_acitycode',
-                        label: 'Arrival City (City Code)',
-                        type: 'text',
-                        placeholder: 'e.g. MEL',
-                        defaultValue: 'HKG'
-                    },
-                    {
-                        id: 'flight_airlinecode',
-                        label: 'Airline Code (Optional)',
-                        type: 'text',
-                        placeholder: 'e.g. SQ, CA',
-                        defaultValue: ''
-                    },
-                    {
-                        id: 'flight_type',
-                        label: 'Flight Type',
-                        type: 'select',
-                        options: [
-                            { value: 'RT', label: 'RT - Round Trip' },
-                            { value: 'OW', label: 'OW - One Way' }
-                        ],
-                        defaultValue: 'RT'
-                    },
-                    {
-                        id: 'flight_class',
-                        label: 'Class',
-                        type: 'select',
-                        options: [
-                            { value: 'Y', label: 'Y - Economy' },
-                            { value: 'S', label: 'S - Premium Economy' },
-                            { value: 'C', label: 'C - Business' },
-                            { value: 'F', label: 'F - First Class' }
-                        ],
-                        defaultValue: 'Y'
-                    },
-                    {
-                        id: 'flight_pax',
-                        label: 'Number of Passengers',
-                        type: 'number',
-                        placeholder: '1-9',
-                        defaultValue: '1'
-                    },
-                    {
-                        id: 'flight_nonstop',
-                        label: 'Non-stop',
-                        type: 'select',
-                        options: [
-                            { value: 'F', label: 'F - Any' },
-                            { value: 'T', label: 'T - Non-stop Only' }
-                        ],
-                        defaultValue: 'F'
-                    }
+                    {id: 'flight_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'flight_dct', label: 'Departure', type: 'text', defaultValue: 'SIN'},
+                    {id: 'flight_act', label: 'Arrival', type: 'text', defaultValue: 'HKG'},
+                    {id: 'flight_airline', label: 'Airline (Optional)', type: 'text', defaultValue: ''},
+                    {id: 'flight_type', label: 'Type', type: 'select', defaultValue: 'RT', options: ['RT', 'OW']},
+                    {id: 'flight_class', label: 'Class', type: 'select', defaultValue: 'Y', options: ['Y', 'S', 'C', 'F']},
+                    {id: 'flight_pax', label: 'Passengers', type: 'number', defaultValue: '1'},
+                    {id: 'flight_nonstop', label: 'Nonstop', type: 'select', defaultValue: 'off', options: ['on', 'off']}
                 ],
-                checkboxes: [],
                 outputs: [
-                    { id: 'flight_universal', label: '📱 Universal Link' },
-                    { id: 'flight_deeplink', label: '🔀 Deeplink' }
+                    {id: 'flight_u', label: 'Universal'},
+                    {id: 'flight_d', label: 'Deeplink'}
                 ],
-                cityData: null,
-                async loadCityData() {
-                    if (this.cityData) return;
-                    try {
-                        const response = await fetch('./城市ID.csv');
-                        const text = await response.text();
-                        this.cityData = {};
-                        const lines = text.split('\n');
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = lines[i].split(',');
-                            if (cols.length >= 3) {
-                                this.cityData[cols[1].trim()] = cols[2].trim();
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Failed to load city data:', e);
-                    }
-                },
-                generate(inputs, checkboxes) {
+                generate(inputs) {
                     const region = inputs.flight_region;
-                    const dcitycode = inputs.flight_dcitycode.toUpperCase();
-                    const acitycode = inputs.flight_acitycode.toUpperCase();
-                    const airlinecode = inputs.flight_airlinecode.toUpperCase().trim();
-                    const flightType = inputs.flight_type;
-                    const flightClass = inputs.flight_class;
-                    const pax = inputs.flight_pax;
-                    const nonstop = inputs.flight_nonstop;
+                    const info = regionMap[region];
+                    const dct = inputs.flight_dct.toUpperCase();
+                    const act = inputs.flight_act.toUpperCase();
+                    const airline = inputs.flight_airline.toUpperCase();
+                    const ddate = formatDate(new Date());
+                    const rdate = formatDate(new Date(Date.now() + 3*24*60*60*1000));
 
-                    const dcityname = this.cityData?.[dcitycode] || dcitycode;
-                    const acityname = this.cityData?.[acitycode] || acitycode;
-                    const routeName = `${dcityname}-to-${acityname}`;
+                    let u = `https://${info.prefix}.trip.com/flights/showfarefirst?dcity=${dct}&acity=${act}&FlightWay=${inputs.flight_type}&class=${inputs.flight_class}&quantity=${inputs.flight_pax}&ddate=${ddate}&rdate=${rdate}&locale=${info.locale}&curr=${info.curr}`;
+                    if (airline) u += `&airline=${airline}`;
+                    if (inputs.flight_nonstop === 'on') u += `&nonstop=on`;
 
-                    const today = new Date();
-                    const ddate = today.toISOString().split('T')[0];
-                    const rdate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-                    let universalLink = `https://${region}.trip.com/flights/${routeName}/tickets-${dcitycode}-${acitycode}?FlightWay=${flightType}&class=${flightClass}&quantity=${pax}&ddate=${ddate}&rdate=${rdate}`;
-
-                    if (airlinecode) {
-                        universalLink += `&airline=${airlinecode}`;
-                    }
-
-                    if (nonstop === 'T') {
-                        universalLink += '&nonstop=on';
-                    }
-
-                    let deeplink = `ctripglobal://FlightListAB/?dct=${dcitycode}&act=${acitycode}&ddt=${ddate}&tp=i`;
-                    if (airlinecode) {
-                        deeplink += `&al=${airlinecode}`;
-                    }
+                    let d = `ctripglobal://FlightListAB/?dct=${dct}&act=${act}&ddt=${ddate}&tp=i`;
+                    if (airline) d += `&al=${airline}`;
 
                     return {
-                        flight_universal: universalLink,
-                        flight_deeplink: deeplink
+                        flight_u: u,
+                        flight_d: d
+                    };
+                }
+            },
+            hotel: {
+                name: '3. Hotel',
+                inputs: [
+                    {id: 'hotel_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'hotel_city', label: 'City', type: 'text', defaultValue: 'Singapore'},
+                    {id: 'hotel_leadtime', label: 'Leadtime (days)', type: 'number', defaultValue: '3'},
+                    {id: 'hotel_nights', label: 'Nights', type: 'number', defaultValue: '3'},
+                    {id: 'hotel_id', label: 'Hotel ID', type: 'text', defaultValue: '904373'}
+                ],
+                outputs: [
+                    {id: 'hotel_list_u', label: 'List - Universal'},
+                    {id: 'hotel_list_d', label: 'List - Deeplink'},
+                    {id: 'hotel_detail_u', label: 'Detail - Universal'},
+                    {id: 'hotel_detail_d', label: 'Detail - Deeplink'}
+                ],
+                generate(inputs) {
+                    const region = inputs.hotel_region;
+                    const info = regionMap[region];
+                    const city = inputs.hotel_city.trim();
+                    const cityId = getCityId(city);
+                    const leadtime = parseInt(inputs.hotel_leadtime) || 0;
+                    const nights = parseInt(inputs.hotel_nights) || 0;
+                    const hotelId = inputs.hotel_id.trim();
+
+                    const today = new Date();
+                    const checkin = new Date(today);
+                    checkin.setDate(checkin.getDate() + leadtime);
+                    const checkout = new Date(checkin);
+                    checkout.setDate(checkout.getDate() + nights);
+
+                    const checkinStr = formatDate(checkin);
+                    const checkoutStr = formatDate(checkout);
+
+                    return {
+                        hotel_list_u: `https://${info.prefix}.trip.com/hotels/list?city=${cityId}&checkIn=${checkinStr}&checkOut=${checkoutStr}&locale=${info.locale}&curr=${info.curr}`,
+                        hotel_list_d: `ctripglobal://hotel/hotellist?city=${cityId}`,
+                        hotel_detail_u: `https://${info.prefix}.trip.com/hotels/detail/?cityid=${cityId}&hotelid=${hotelId}&checkin=${checkinStr}&checkout=${checkoutStr}&locale=${info.locale}&curr=${info.curr}`,
+                        hotel_detail_d: `ctripglobal://hotel/hoteldetail?ct=${cityId}&hid=${hotelId}&cin=${checkinStr}&cout=${checkoutStr}`
+                    };
+                }
+            },
+            poi: {
+                name: '4. POI',
+                inputs: [
+                    {id: 'poi_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'poi_city', label: 'City', type: 'text', defaultValue: 'Hong Kong'},
+                    {id: 'poi_id', label: 'POI ID', type: 'text', defaultValue: '76136'}
+                ],
+                outputs: [
+                    {id: 'poi_home_u', label: 'Homepage - Universal'},
+                    {id: 'poi_home_d', label: 'Homepage - Deeplink'},
+                    {id: 'poi_list_u', label: 'List - Universal'},
+                    {id: 'poi_list_d', label: 'List - Deeplink'},
+                    {id: 'poi_detail_u', label: 'Detail - Universal'},
+                    {id: 'poi_detail_d', label: 'Detail - Deeplink'}
+                ],
+                generate(inputs) {
+                    const region = inputs.poi_region;
+                    const info = regionMap[region];
+                    const city = inputs.poi_city.trim();
+                    const cityId = getPoiCityId(city);
+                    const poiId = inputs.poi_id.trim();
+                    const cityUrl = city.replace(/\s+/g, '-');
+
+                    return {
+                        poi_home_u: `https://${info.prefix}.trip.com/travel-guide/destination/${cityUrl}-${cityId}/?locale=${info.locale}&curr=${info.curr}`,
+                        poi_home_d: `ctripglobal://crn/rn_ibu_traveling/_crn_config?CRNModuleName=RN_Product_IBU_Traveling&CRNType=1&initialPage=DestDetail&districtId=${cityId}`,
+                        poi_list_u: `https://${info.prefix}.trip.com/travel-guide/attraction/${cityUrl}-${cityId}/tourist-attractions/?locale=${info.locale}&curr=${info.curr}`,
+                        poi_list_d: `ctripglobal://crn/rn_ibu_localtone/_crn_config?CRNModuleName=ibulocaltone&CRNType=1&initialPage=list&pagetype=city&id=${cityId}&citytype=dt&districttype=3&pshowcode=Ticket2`,
+                        poi_detail_u: `https://${info.prefix}.trip.com/travel-guide/attraction/xxx/xxx-${poiId}/?locale=${info.locale}&curr=${info.curr}`,
+                        poi_detail_d: `ctripglobal://crn/rn_ibu_traveling/_crn_config?CRNModuleName=RN_Product_IBU_Traveling&CRNType=1&transparentstatusbar=1&initialPage=POIDetail&sightId=${poiId}`
+                    };
+                }
+            },
+            tour: {
+                name: '5. Tour',
+                inputs: [
+                    {id: 'tour_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'tour_city', label: 'City', type: 'text', defaultValue: 'Beijing'},
+                    {id: 'tour_product_id', label: 'Product ID', type: 'text', defaultValue: '69843769'}
+                ],
+                outputs: [
+                    {id: 'tour_u', label: 'Universal'},
+                    {id: 'tour_d', label: 'Deeplink'}
+                ],
+                generate(inputs) {
+                    const region = inputs.tour_region;
+                    const info = regionMap[region];
+                    const city = inputs.tour_city.trim();
+                    const cityId = getCityId(city);
+                    const productId = inputs.tour_product_id.trim();
+
+                    return {
+                        tour_u: `https://${info.prefix}.trip.com/package-tours/detail/${productId}?city=${cityId}&locale=${info.locale}&curr=${info.curr}`,
+                        tour_d: `ctripglobal://crn/rn_ibu_tour/main.js?CRNModuleName=ibu_tour&CRNType=1&initialPage=detail&departcityid=${cityId}&productid=${productId}`
+                    };
+                }
+            },
+            cruise: {
+                name: '6. Cruise',
+                inputs: [
+                    {id: 'cruise_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'cruise_product_id', label: 'Product ID', type: 'text', defaultValue: '99079'}
+                ],
+                outputs: [
+                    {id: 'cruise_u', label: 'Universal'},
+                    {id: 'cruise_d', label: 'Deeplink'},
+                    {id: 'cruise_h5', label: 'H5 Link'}
+                ],
+                generate(inputs) {
+                    const region = inputs.cruise_region;
+                    const info = regionMap[region];
+                    const productId = inputs.cruise_product_id.trim();
+
+                    return {
+                        cruise_u: `https://${info.prefix}.trip.com/cruises/line-${productId}/?locale=${info.locale}&curr=${info.curr}`,
+                        cruise_d: `ctripglobal://crn/rn_ibu_cruise/index.ios.bundle?CRNModuleName=rn_ibu_cruise&CRNType=1&initialPage=ProductDetail&voyaId=${productId}`,
+                        cruise_h5: `https://${info.prefix}.trip.com/cw/cruise/productDetail.html?voyaId=${productId}&locale=${info.locale}&curr=${info.curr}`
+                    };
+                }
+            },
+            carental: {
+                name: '7. Car Rental',
+                inputs: [
+                    {id: 'car_region', label: 'Region', type: 'select', defaultValue: 'sg'},
+                    {id: 'car_city', label: 'City', type: 'text', defaultValue: 'Kuala Lumpur'}
+                ],
+                outputs: [
+                    {id: 'car_u', label: 'Universal'},
+                    {id: 'car_d', label: 'Deeplink'}
+                ],
+                generate(inputs) {
+                    const region = inputs.car_region;
+                    const info = regionMap[region];
+                    const city = inputs.car_city.trim();
+                    const cityId = getCityId(city);
+
+                    return {
+                        car_u: `https://${info.prefix}.trip.com/carhire/online/list?serverRoute=1&pcity=${cityId}&rcity=${cityId}&locale=${info.locale}&curr=${info.curr}`,
+                        car_d: `ctripglobal://crn/rn_ibu_car_app/_crn_config?CRNModuleName=rn_ibu_car_app&CRNType=1&initialPage=Market&st=ser&fromurl=common&landingto=List&apptype=OSD_T_APP&pcid=${cityId}&rcid=${cityId}`
                     };
                 }
             }
         };
 
-        // ============ UI Generation and Management ============
+        let currentScene = 'campaign';
 
-        class LinkGenerator {
-            constructor() {
-                this.currentScene = 'activityPage';
-                this.inputValues = {};
-                this.checkboxValues = {};
-                this.init();
-            }
-
-            async init() {
-                this.renderTabs();
-                this.renderScene(this.currentScene);
-                await sceneConfigs.flightList.loadCityData();
-            }
-
-            renderTabs() {
-                const tabsContainer = document.getElementById('sceneTabs');
-                tabsContainer.innerHTML = '';
-                Object.values(sceneConfigs).forEach(config => {
-                    const btn = document.createElement('button');
-                    btn.className = `tab-btn ${config.id === this.currentScene ? 'active' : ''}`;
-                    btn.textContent = config.name;
-                    btn.onclick = () => this.switchScene(config.id);
-                    tabsContainer.appendChild(btn);
-                });
-            }
-
-            switchScene(sceneId) {
-                this.currentScene = sceneId;
-                this.renderTabs();
-                this.renderScene(sceneId);
-            }
-
-            renderScene(sceneId) {
-                const config = sceneConfigs[sceneId];
-                const container = document.getElementById('scenesContainer');
-                container.innerHTML = '';
-
-                const sceneDiv = document.createElement('div');
-                sceneDiv.className = 'scene active';
-
-                // Input Section
-                if (config.inputs.length > 0 || config.checkboxes.length > 0) {
-                    const inputSection = document.createElement('div');
-                    inputSection.className = 'section';
-                    inputSection.innerHTML = '<div class="section-title">Input Configuration</div>';
-
-                    if (config.inputs.length > 0) {
-                        const inputGroup = document.createElement('div');
-                        inputGroup.className = 'input-group';
-
-                        config.inputs.forEach(input => {
-                            const field = document.createElement('div');
-                            const isSelect = input.type === 'select';
-                            field.className = isSelect ? 'form-field' : 'form-field input-field';
-
-                            const label = document.createElement('label');
-                            label.textContent = input.label;
-                            field.appendChild(label);
-
-                            let element;
-                            if (input.type === 'select') {
-                                element = document.createElement('select');
-                                element.id = input.id;
-                                input.options.forEach(opt => {
-                                    const option = document.createElement('option');
-                                    option.value = opt.value;
-                                    option.textContent = opt.label;
-                                    element.appendChild(option);
-                                });
-                            } else if (input.type === 'number') {
-                                element = document.createElement('input');
-                                element.id = input.id;
-                                element.type = 'number';
-                                element.placeholder = input.placeholder;
-                                element.min = '1';
-                                element.max = '9';
-                            } else {
-                                element = document.createElement('input');
-                                element.id = input.id;
-                                element.type = 'text';
-                                element.placeholder = input.placeholder;
-                            }
-
-                            element.value = input.defaultValue;
-                            element.addEventListener('change', () => this.updateAndGenerate(sceneId));
-                            element.addEventListener('input', () => this.updateAndGenerate(sceneId));
-
-                            field.appendChild(element);
-                            inputGroup.appendChild(field);
-                        });
-
-                        inputSection.appendChild(inputGroup);
-                    }
-
-                    if (config.checkboxes.length > 0) {
-                        const checkboxGroup = document.createElement('div');
-                        checkboxGroup.className = 'checkbox-group';
-
-                        config.checkboxes.forEach(checkbox => {
-                            const item = document.createElement('div');
-                            item.className = 'checkbox-item';
-
-                            const input = document.createElement('input');
-                            input.type = 'checkbox';
-                            input.id = checkbox.id;
-                            input.checked = checkbox.defaultValue;
-                            input.addEventListener('change', () => this.updateAndGenerate(sceneId));
-
-                            const label = document.createElement('label');
-                            label.htmlFor = checkbox.id;
-                            label.textContent = checkbox.label;
-
-                            item.appendChild(input);
-                            item.appendChild(label);
-                            checkboxGroup.appendChild(item);
-                        });
-
-                        inputSection.appendChild(checkboxGroup);
-                    }
-
-                    sceneDiv.appendChild(inputSection);
-                }
-
-                // Output Section
-                const outputSection = document.createElement('div');
-                outputSection.className = 'section';
-                outputSection.innerHTML = '<div class="section-title">Generated Links</div>';
-
-                config.outputs.forEach(output => {
-                    const outputBox = document.createElement('div');
-                    outputBox.className = 'output-section';
-
-                    const label = document.createElement('div');
-                    label.className = 'output-label';
-                    label.textContent = output.label;
-                    outputBox.appendChild(label);
-
-                    const item = document.createElement('div');
-                    item.className = 'output-item';
-
-                    const content = document.createElement('div');
-                    content.className = 'output-content';
-
-                    const link = document.createElement('div');
-                    link.id = output.id;
-                    link.className = 'output-link';
-                    link.textContent = 'Loading...';
-
-                    const btn = document.createElement('button');
-                    btn.className = 'copy-btn';
-                    btn.textContent = 'Copy';
-                    btn.onclick = (e) => this.copyToClipboard(output.id, e);
-
-                    content.appendChild(link);
-                    content.appendChild(btn);
-                    item.appendChild(content);
-                    outputBox.appendChild(item);
-
-                    outputSection.appendChild(outputBox);
-                });
-
-                sceneDiv.appendChild(outputSection);
-
-                // Reset Button
-                const buttonSection = document.createElement('div');
-                buttonSection.className = 'section';
-                buttonSection.style.marginBottom = '0';
-
-                const resetBtn = document.createElement('button');
-                resetBtn.className = 'reset-btn';
-                resetBtn.textContent = 'Reset';
-                resetBtn.onclick = () => this.resetScene(sceneId);
-
-                buttonSection.appendChild(resetBtn);
-                sceneDiv.appendChild(buttonSection);
-
-                container.appendChild(sceneDiv);
-
-                // Generate initial links
-                this.updateAndGenerate(sceneId);
-            }
-
-            updateAndGenerate(sceneId) {
-                const config = sceneConfigs[sceneId];
-
-                const inputs = {};
-                config.inputs.forEach(input => {
-                    const element = document.getElementById(input.id);
-                    inputs[input.id] = element ? element.value : input.defaultValue;
-                });
-
-                const checkboxes = {};
-                config.checkboxes.forEach(checkbox => {
-                    const element = document.getElementById(checkbox.id);
-                    checkboxes[checkbox.id] = element ? element.checked : checkbox.defaultValue;
-                });
-
-                this.inputValues[sceneId] = inputs;
-                this.checkboxValues[sceneId] = checkboxes;
-
-                const results = config.generate(inputs, checkboxes);
-
-                Object.entries(results).forEach(([outputId, value]) => {
-                    const element = document.getElementById(outputId);
-                    if (element) {
-                        element.textContent = value;
-                    }
-                });
-            }
-
-            resetScene(sceneId) {
-                const config = sceneConfigs[sceneId];
-
-                config.inputs.forEach(input => {
-                    const element = document.getElementById(input.id);
-                    if (element) {
-                        element.value = input.defaultValue;
-                    }
-                });
-
-                config.checkboxes.forEach(checkbox => {
-                    const element = document.getElementById(checkbox.id);
-                    if (element) {
-                        element.checked = checkbox.defaultValue;
-                    }
-                });
-
-                this.updateAndGenerate(sceneId);
-            }
-
-            copyToClipboard(elementId, event) {
-                const element = document.getElementById(elementId);
-                const text = element.textContent;
-                const btn = event.target;
-                const originalText = btn.textContent;
-
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.left = '-9999px';
-                document.body.appendChild(textarea);
-
-                try {
-                    textarea.select();
-                    textarea.setSelectionRange(0, 99999);
-                    const successful = document.execCommand('copy');
-
-                    if (successful) {
-                        btn.textContent = '✓ Copied';
-                        btn.classList.add('copied');
-                        setTimeout(() => {
-                            btn.textContent = originalText;
-                            btn.classList.remove('copied');
-                        }, 2000);
-                    }
-                } catch (err) {
-                    alert('✓ Link selected. Press Ctrl+C (or Cmd+C) to copy');
-                } finally {
-                    document.body.removeChild(textarea);
-                }
-            }
+        function renderTabs() {
+            const container = document.getElementById('tabs');
+            container.innerHTML = '';
+            Object.entries(sceneConfigs).forEach(([key, config]) => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${key === currentScene ? 'active' : ''}`;
+                btn.textContent = config.name;
+                btn.onclick = () => {
+                    currentScene = key;
+                    render();
+                };
+                container.appendChild(btn);
+            });
         }
 
-        // Initialize
-        const generator = new LinkGenerator();
+        function renderForm() {
+            const config = sceneConfigs[currentScene];
+            const container = document.getElementById('formPanel');
+            container.innerHTML = '';
+
+            config.inputs.forEach(input => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+
+                if (input.type === 'checkbox') {
+                    group.innerHTML = `
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="${input.id}" ${input.defaultValue ? 'checked' : ''}>
+                            <label for="${input.id}" style="margin: 0;">${input.label}</label>
+                        </div>
+                    `;
+                } else if (input.type === 'select') {
+                    const options = input.options ? input.options : Object.keys(regionMap);
+                    let optionsHtml = options.map(opt => `<option value="${opt}" ${opt === input.defaultValue ? 'selected' : ''}>${opt}</option>`).join('');
+                    group.innerHTML = `
+                        <label>${input.label}</label>
+                        <select id="${input.id}">${optionsHtml}</select>
+                    `;
+                } else {
+                    group.innerHTML = `
+                        <label>${input.label}</label>
+                        <input type="${input.type}" id="${input.id}" value="${input.defaultValue}">
+                    `;
+                }
+                container.appendChild(group);
+            });
+
+            const btn = document.createElement('button');
+            btn.className = 'btn-generate';
+            btn.textContent = 'Generate';
+            btn.onclick = renderOutputs;
+            container.appendChild(btn);
+        }
+
+        function renderOutputs() {
+            const config = sceneConfigs[currentScene];
+            const inputs = {};
+
+            config.inputs.forEach(input => {
+                const elem = document.getElementById(input.id);
+                inputs[input.id] = input.type === 'checkbox' ? elem.checked : elem.value;
+            });
+
+            const results = config.generate(inputs);
+            const container = document.getElementById('outputPanel');
+            container.innerHTML = '';
+
+            config.outputs.forEach(output => {
+                const item = document.createElement('div');
+                item.className = 'output-item';
+
+                const label = document.createElement('div');
+                label.className = 'output-label';
+                label.textContent = output.label;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'output-wrapper';
+
+                const content = document.createElement('div');
+                content.className = 'output-content';
+                content.textContent = results[output.id];
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-copy';
+                btn.textContent = 'Copy';
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(results[output.id]);
+                    btn.textContent = '✓';
+                    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+                };
+
+                wrapper.appendChild(content);
+                wrapper.appendChild(btn);
+                item.appendChild(label);
+                item.appendChild(wrapper);
+                container.appendChild(item);
+            });
+        }
+
+        function render() {
+            renderTabs();
+            renderForm();
+            renderOutputs();
+        }
+
+        render();
     </script>
 </body>
 </html>
